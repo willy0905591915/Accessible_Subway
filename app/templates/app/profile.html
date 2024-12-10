@@ -1,0 +1,81 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>User Profile</title>
+    <link rel="stylesheet" href="{% static 'app/profile.css' %}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+</head>
+<body>
+    <div class="profile-container">
+        <h1>{{ profile.user.username }}'s Profile</h1>
+
+        <div>
+            <a href="{% url 'maps:map_view' %}" class="btn btn-primary">Home</a>
+        </div>
+        
+        <div style="text-align: right;">
+            <a href="{% url 'app:edit_profile' %}" class="btn btn-primary">Edit Profile</a>
+        </div>
+        
+
+        <h2>Birth Date</h2> 
+        <p>{{ profile.birth_date|default:"Not provided" }}</p>
+        
+        <h2>Home Location</h2>
+        {% if profile.home_address %}
+            <span>{{profile.home_address}}</span>
+            <!-- Map icon with link to the map page -->
+            <a href="{% url 'maps:map_view' %}?dest_lat={{ profile.home_latitude }}&dest_lng={{ profile.home_longitude }}&name={{profile.home_address}}">
+                <i class="bi bi-geo-fill"></i> 
+            </a>
+        {% else %}
+            <p>Not set</p>
+        {% endif %}
+    
+        
+        <h2>Work Location</h2>
+        {% if profile.work_address %}
+            <span>{{profile.work_address}}</span>
+            <!-- <p>{ {{ profile.work_latitude }} , {{ profile.work_longitude }} }  </p> -->
+            <!-- Map icon with link to the map page -->
+            <a href="{% url 'maps:map_view' %}?dest_lat={{ profile.work_latitude }}&dest_lng={{ profile.work_longitude }}&name={{profile.work_address}}">
+                <i class="bi bi-geo-fill"></i>
+            </a>
+        {% else %}
+            <p>Not set</p>
+        {% endif %}
+
+        <h2>Favorite Station</h2>
+        {% if profile.fav_station %}
+            <p>Station: {{ profile.fav_station.stop_name }}</p>
+            <a href="{% url 'app:station_detail' profile.fav_station.station_id %}">View Station Details</a>
+            <!-- Map icon with link to the map page -->
+            <a href="{% url 'maps:map_view' %}?dest_lat={{ profile.fav_station.gtfs_latitude }}&dest_lng={{ profile.fav_station.gtfs_longitude }}&name={{ profile.fav_station.stop_name }}">
+                <i class="bi bi-geo-fill"></i>
+            </a>
+        {% else %}
+            <p>No favorite station set.</p>
+        {% endif %}
+
+        <h2>Favorite Route</h2>
+        {% if profile.fav_dest_latitude and profile.fav_dest_longitude %}
+            <p>Source : { {{ profile.fav_source_latitude }} , {{ profile.fav_source_longitude }} }</p>
+            <p>Destination : { {{ profile.fav_dest_latitude }} , {{ profile.fav_dest_longitude }} }</p>
+            <!-- Map icon with link to the map page -->
+            <a href="{% url 'maps:map_view' %}?source_lat={{ profile.fav_source_latitude }}&source_lng={{ profile.fav_source_longitude }}&dest_lat={{ profile.fav_dest_latitude }}&dest_lng={{ profile.fav_dest_longitude }}&name=Favourite">
+                <i class="bi bi-geo-fill"></i>
+            </a>
+        {% else %}
+            <p>Not set</p>
+        {% endif %}
+        
+        <h2>Reliability Score:</h2> 
+        <p>{{ profile.score }}</p>
+        
+
+    </div>
+    
+</body>
+</html>

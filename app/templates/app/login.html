@@ -1,0 +1,27 @@
+{% load static %}
+{% block content %}
+<head>
+  <link rel="stylesheet" type="text/css" href="{% static 'app/login.css' %}">
+</head>
+
+  <h2>Login</h2>
+  <form method="POST">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Login</button>
+  </form>
+  <label for="register">Create Account:</label>
+  <a style="margin-bottom: 10px;"  href="{% url 'app:register' %}"><button name="register">Register</button></a>
+
+  
+  <label for="return">Return to Map View</label>
+  <a href="{% url 'maps:map_view' %}"><button name="return">Return</button></a>
+
+  <!-- {% if messages %}
+    <ul>
+      {% for message in messages %}
+        <li>{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %} -->
+{% endblock %}

@@ -1,0 +1,213 @@
+<!-- alerts.html -->
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Real-Time MTA Alerts</title>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" type="text/css" href="{% static 'app/alerts.css' %}">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+    <!-- Black Bar with Title and Home Button -->
+    <div class="navbar">
+        <h1>Real-Time MTA Alerts</h1>
+        <a href="{% url 'maps:map_view' %}" class="btn btn-success">Home</a>
+    </div>
+
+    <div class="container mt-4">
+        <!-- Filters -->
+        <div id="filter-container" class="mb-4">
+            <h4>Filter by Line:</h4>
+            <form id="line-filter-form">
+                <!-- Checkboxes for each line -->
+                <div class="form-check form-check-inline">
+                    <!-- Line 1 -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="1" id="line-1">
+                    <label class="form-check-label" for="line-1">1</label>
+
+                    <!-- Line 2 -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="2" id="line-2">
+                    <label class="form-check-label" for="line-2">2</label>
+
+                    <!-- Line 3 -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="3" id="line-3">
+                    <label class="form-check-label" for="line-3">3</label>
+
+                    <!-- Line 4 -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="4" id="line-4">
+                    <label class="form-check-label" for="line-4">4</label>
+
+                    <!-- Line 5 -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="5" id="line-5">
+                    <label class="form-check-label" for="line-5">5</label>
+
+                    <!-- Line 6 -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="6" id="line-6">
+                    <label class="form-check-label" for="line-6">6</label>
+
+                    <!-- Line 7 -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="7" id="line-7">
+                    <label class="form-check-label" for="line-7">7</label>
+
+                    <!-- Line A -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="A" id="line-A">
+                    <label class="form-check-label" for="line-A">A</label>
+
+                    <!-- Line C -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="C" id="line-C">
+                    <label class="form-check-label" for="line-C">C</label>
+
+                    <!-- Line E -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="E" id="line-E">
+                    <label class="form-check-label" for="line-E">E</label>
+
+                    <!-- Line B -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="B" id="line-B">
+                    <label class="form-check-label" for="line-B">B</label>
+
+                    <!-- Line D -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="D" id="line-D">
+                    <label class="form-check-label" for="line-D">D</label>
+
+                    <!-- Line F -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="F" id="line-F">
+                    <label class="form-check-label" for="line-F">F</label>
+
+                    <!-- Line M -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="M" id="line-M">
+                    <label class="form-check-label" for="line-M">M</label>
+
+                    <!-- Line G -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="G" id="line-G">
+                    <label class="form-check-label" for="line-G">G</label>
+
+                    <!-- Line J -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="J" id="line-J">
+                    <label class="form-check-label" for="line-J">J</label>
+
+                    <!-- Line Z -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="Z" id="line-Z">
+                    <label class="form-check-label" for="line-Z">Z</label>
+
+                    <!-- Line L -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="L" id="line-L">
+                    <label class="form-check-label" for="line-L">L</label>
+
+                    <!-- Line N -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="N" id="line-N">
+                    <label class="form-check-label" for="line-N">N</label>
+
+                    <!-- Line Q -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="Q" id="line-Q">
+                    <label class="form-check-label" for="line-Q">Q</label>
+
+                    <!-- Line R -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="R" id="line-R">
+                    <label class="form-check-label" for="line-R">R</label>
+
+                    <!-- Line W -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="W" id="line-W">
+                    <label class="form-check-label" for="line-W">W</label>
+
+                    <!-- Line S -->
+                    <input class="form-check-input" type="checkbox" name="lines" value="S" id="line-S">
+                    <label class="form-check-label" for="line-S">S</label>
+                </div>
+            </form>
+        </div>
+
+        <!-- Alerts container to be updated with AJAX -->
+        <div id="alerts-container">
+            <!-- Initial content can be empty or include static alerts -->
+            {% include "app/alerts_content.html" %}
+        </div>
+    </div>
+
+    <script>
+        function fetchAlerts() {
+            let selectedLines = [];
+            $('input[name="lines"]:checked').each(function() {
+                selectedLines.push($(this).val());
+            });
+
+            let data = {};
+            if (selectedLines.length > 0) {
+                data.lines = selectedLines.join(',');
+            }
+
+            $.ajax({
+                url: '{% url "app:alerts" %}',
+                type: 'GET',
+                dataType: 'json',
+                data: data,
+                success: function(response) {
+                    if (response.alerts_data && response.alerts_data.length > 0) {
+                        $('#alerts-container').html('');
+                        let alertContent = '<div class="list-group">';
+                        response.alerts_data.forEach(function(alert) {
+                            let header = alert.header || "";
+                            let description = alert.description || "";
+                            alertContent += `
+                            <div class="list-group-item mb-3">
+                                <h4>${replaceLinesWithIcons(header)}</h4>
+                                ${description ? `<p>${replaceLinesWithIcons(description)}</p>` : ''}
+                            </div>`;
+                        });
+                        alertContent += '</div>';
+                        $('#alerts-container').html(alertContent);
+                    } else {
+                        $('#alerts-container').html('<p>No alerts available at the moment. Please check back later.</p>');
+                    }
+                },
+                error: function(error) {
+                    console.log("Error fetching alerts data", error);
+                }
+            });
+        }
+
+        function replaceLinesWithIcons(text) {
+            const lineColors = {
+                '1': '#EE352E',
+                '2': '#EE352E',
+                '3': '#EE352E',
+                '4': '#00933C',
+                '5': '#00933C',
+                '6': '#00933C',
+                '7': '#B933AD',
+                'A': '#0039A6',
+                'C': '#0039A6',
+                'E': '#0039A6',
+                'B': '#FF6319',
+                'D': '#FF6319',
+                'F': '#FF6319',
+                'M': '#FF6319',
+                'G': '#6CBE45',
+                'J': '#996633',
+                'Z': '#996633',
+                'L': '#A7A9AC',
+                'N': '#FCCC0A',
+                'Q': '#FCCC0A',
+                'R': '#FCCC0A',
+                'W': '#FCCC0A',
+                'S': '#808183'
+            };
+
+            return text.replace(/\[(\w+)\]/g, function(match, line) {
+                const color = lineColors[line] || '#000000';
+                return `<span class="line-icon" style="background-color: ${color}; color: white; padding: 2px 6px; border-radius: 50%; font-size: 12px;">${line}</span>`;
+            });
+        }
+
+        $(document).ready(function() {
+            fetchAlerts();
+            setInterval(fetchAlerts, 10000); // Refresh every 10 seconds
+            $('input[name="lines"]').change(function() {
+                fetchAlerts();
+            });
+        });
+    </script>
+</body>
+</html>
